@@ -51,7 +51,9 @@ export default function Details() {
             <p style={{ color: "#a5a5a5" }}>{new Date(data.created_At).toDateString()}</p>
          </div>
          <div className="mt-5">
-           <p >{data.content}</p>
+         <div dangerouslySetInnerHTML={{ __html: data.content }}>
+
+            </div>
             
          </div>
          
