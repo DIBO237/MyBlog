@@ -1,31 +1,54 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import "../App.css";
-import { Button, Container } from "react-bootstrap";
+import { Button, Container, Spinner } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
+import axios from "axios";
+import { Helmet } from "react-helmet";
 
 export default function Home() {
+  const [data, setData] = useState(null);
+  const getData = () => {
+    axios.get("https://dibyo-blog.herokuapp.com/dibyo/blog").then((item) => {
+      console.log(item.data);
+      setData(item.data);
+    });
+  };
+
+  useEffect(() => {
+    getData();
+  }, []);
+
   return (
     <div>
-      <Container style={{ marginTop: 20, color: "white", maxWidth: 1000 }}>
-        {[1,2,3,4,5,6,7,8,9,10].map((item)=>(
-               <div>
-               <h1 className="mt-5" style={{ color: "white", fontWeight: "bold" }}>
-                 How To Create A VSCode Snippet
-               </h1>
-               <p style={{ color: " #a5a5a5 " }}>March 7,2022, By Dibya Dey</p>
-               <h5>
-                 Snippets are one of the easiest ways to customize your VSCode
-                 experience and in this article I will explain everything you need to
-                 know about creating your first snippet.
-               </h5>
-               <Link to="/details/hello">
-                 <h5 style={{ fontStyle: "none" }}>Read More</h5>
-               </Link>
-               <hr style={{ marginTop: 40 }} />
-             </div>
-        ))}
-        
+      <Container style={{ marginTop: 20, color: "white", maxWidth: 1000,textDecoration:"none" }}>
+        {data !== null ? (
+          data.map((item) => (
+            <div>
+              <Link to={`/details/${item.url_link}` } style={{textDecoration:"none"}}>
+              <h1
+                className="mt-5"
+                style={{ color: "white", fontWeight: "bold" }}
+              >
+                {item.title}
+              </h1></Link>
+              <p style={{ color: " #a5a5a5 " }}>
+                {new Date(item.created_At).toDateString()}
+              </p>
+              <h5>{item.description}</h5>
+              <Link to={`/details/${item.url_link}`}>
+                <h5 style={{ fontStyle: "none" }}>Read More</h5>
+              </Link>
+              <hr style={{ marginTop: 40 }} />
+            </div>
+          ))
+        ) : (
+          <center>
+            <Spinner animation="border" role="status">
+              <span className="visually-hidden">Loading...</span>
+            </Spinner>
+          </center>
+        )}
       </Container>
     </div>
   );
